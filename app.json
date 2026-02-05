@@ -3,7 +3,7 @@
     "name": "balbam-app",
     "slug": "balbam-app",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "landscape",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
@@ -25,6 +25,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "react-native-google-maps",
+        {
+          "androidApiKey": "${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}",
+          "iosApiKey": "${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}"
+        }
+      ]
+    ]
   }
 }

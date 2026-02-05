@@ -2,6 +2,7 @@
 import { View, Text, TextInput, StyleSheet, Pressable, Alert, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import MapView, { Marker, Polyline } from 'react-native-maps'; // MapView, Marker, Polyline import
 import { fetchRoute } from '../utils/api'; // api.ts에서 fetchRoute 함수 import
 
 export default function SearchScreen() {
@@ -9,9 +10,17 @@ export default function SearchScreen() {
   const [destination, setDestination] = useState('');
   const [loading, setLoading] = useState(false); // 로딩 상태
   const [error, setError] = useState<string | null>(null); // 오류 상태
-  const [routeResult, setRouteResult] = useState<{ time: number; route: string[] } | null>(null); // 결과 상태
+  const [routeResult, setRouteResult] = useState<{ time: number; route: string[]; coordinates: { latitude: number; longitude: number }[] } | null>(null); // 결과 상태, coordinates 추가
 
   const router = useRouter();
+
+  // 서울의 대략적인 중심 좌표
+  const initialRegion = {
+    latitude: 37.5665,
+    longitude: 126.9780,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  };
 
   const handleSearch = async () => { // handleSearch를 async 함수로 변경
     // 기존 유효성 검사
@@ -77,6 +86,37 @@ export default function SearchScreen() {
           ))}
         </View>
       ) : null}
+
+      <View style={styles.mapContainer}>
+        <MapView
+          style={styles.map}
+          initialRegion={initialRegion}
+          provider="google" // Google Maps provider 사용
+        >
+          {routeResult && routeResult.coordinates.length > 0 && (
+            <>
+              <Marker
+                coordinate={routeResult.coordinates[0]}
+                title="Origin"
+                pinColor="green"
+              />
+              <Marker
+                coordinate={routeResult.coordinates[routeResult.coordinates.length - 1]}
+                title="Destination"
+                pinColor="red"
+              />
+              <Polyline
+                coordinates={routeResult.coordinates}
+                strokeWidth={4}
+                strokeColor="blue"
+              />
+            </>
+          )}
+        </MapView>
+        <Text style={styles.mapDisclaimer}>
+          Google Maps API Key가 필요합니다. `app.json` 또는 `.env` 파일에 설정해주세요.
+        </Text>
+      </View>
     </View>
   );
 }
@@ -138,6 +178,22 @@ const styles = StyleSheet.create({
   resultStep: {
     fontSize: 14,
     marginLeft: 10,
+    marginTop: 5,
+  },
+  mapContainer: {
+    flex: 1, // 지도가 남은 공간을 차지하도록 설정
+    marginTop: 20,
+    borderRadius: 8,
+    overflow: 'hidden', // 맵 모서리 둥글게 처리
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+  },
+  mapDisclaimer: {
+    fontSize: 12,
+    color: '#888',
+    textAlign: 'center',
     marginTop: 5,
   },
 });

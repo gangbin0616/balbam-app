@@ -75,7 +75,7 @@ EXPO_PUBLIC_GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY_HERE
 
 ### 앱 실행
 
-앱을 가로 모드로 실행해야 합니다.
+앱을 세로 모드로 실행해야 합니다.
 
 ```bash
 npx expo start
